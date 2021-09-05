@@ -95,3 +95,13 @@ this api let enter the city name and then you can xplore the data about this cit
 ## Credit and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 https://locationiq.com/docs#search-forward-geocoding
+
+Name of feature: _________API and axios_______________________
+
+Estimate of time needed to complete: __4 hours___
+
+Start time: ___1:20 pm__
+
+Finish time: ___9:30 pm__
+
+Actual time needed to complete: __4 hours___
