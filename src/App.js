@@ -1,77 +1,82 @@
-import React from 'react'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import "./App.css";
-import axios from 'axios'
+import React from "react";
+import { Button, Form, Image, Modal } from "react-bootstrap";
+import axios from "axios";
 
-class App extends React.Component{
-  constructor(props){
+class App extends React.Component {
+  constructor(props) {
     super(props);
     this.state = {
-      locationName : '',
-      locationData :{},
-      locationImg : '',
-      errormessege:false,
-    }
+      lat: "",
+      lon: "",
+      placeName: "",
+      displayErr: false,
+      displayMap: false,
+      zoom: 12,
+      stop: true,
+    };
   }
-  handleLocationName =  (e) => { this.setState({locationName : e.target.value})}
-  handleSubmit = async (e) => {
-    e.preventDefault();
-    const url = `https://eu1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATION_KEY}&q=${this.state.locationName}&format=json`;
-    console.log(this.state.locationName,url)
-    try{
-    const response = await axios.get(url)
-
-    console.log(response.data[0])
-        this.setState({
-      locationData:response.data[0],
-    });}
-    catch{
+  handler = async (event) => {
+    event.preventDefault();
+    let place = event.target.place.value;
+    let URL = `https://eu1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATION_KEY}&q=${place}&format=json`;
+    console.log(this.state);
+    try {
+      let recData = await axios.get(URL);
       this.setState({
-  
-        errormessege:true
-      })
+        lat: recData.data[0].lat,
+        lon: recData.data[0].lon,
+        placeName: recData.data[0].display_name,
+        displayMap: true,
+      });
+    } catch {
+      this.setState({
+        displayErr: true,
+      });
     }
-    const map_url = `https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_LOCATION_KEY}&center=${this.state.locationData.lat},${this.state.locationData.lon}&format=jpg `
-    const mapres = await axios.get(map_url)
-    const map = mapres.config.url
-    this.setState({
-      map:map
-    })
-     
- 
-  }
+  };
+  render() {
+    return (
+      <body>
+        <header>
+          <h1>City Explorer </h1>
+        </header>
 
-  render(){
-  return (
-    <div id='all'>
-      <Form onSubmit={this.handleSubmit}>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>City Name</Form.Label>
-          <Form.Control type="text" onChange={this.handleLocationName} placeholder="Enter City Name" />
-        </Form.Group>
-        <Button variant="primary" type="submit">
-          EXPLORE
-        </Button>
-      </Form>
-    
-      <div>
-        <h2>City Info</h2>
-        <p>name :{this.state.locationData.display_name}</p>
-        <p>latitude :{this.state.locationData.lat}</p>
-        <p>longitude :{this.state.locationData.lon}</p>
-        
-      </div>
-      
-        <br/>
-      <img src= {this.state.map} alt=" " width="500" height="600"/>
-  
-      {
-  this.state.errormessege&&<p >invalid input</p>
-}
-    </div>
-  );
-}
+        <main>
+          <Form onSubmit={this.handler}>
+            <Form.Group controlId="formGridEmail">
+              <Form.Label>Enter the place:</Form.Label>
+              <Form.Control type="text" placeholder="enter location name" name="place"/>
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+          </Form>
+          <p> City name: {this.state.placeName}</p>
+          {this.state.displayMap && (
+            <p>
+              {this.state.placeName} is in {this.state.lat} by {this.state.lon}
+            </p>
+          )}
+          {this.state.displayMap && (
+            <Image
+              src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_LOCATION_KEY}&center=${this.state.lat},${this.state.lon}&zoom=${this.state.zoom}&size=600x250`}
+              rounded
+            />
+          )}
+        </main>
+        {this.state.displayErr && (
+          <>
+            <Modal show={true}>
+              <Modal.Header>
+                <Modal.Title>inavalid entry</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>city name not found</Modal.Body>
+            </Modal>
+          </>
+        )}
+      </body>
+    );
+  }
 }
 
 export default App;
