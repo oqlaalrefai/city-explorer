@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button } from 'react-bootstrap';
 import Image from 'react-bootstrap/Image'
 class App extends React.Component {
@@ -38,7 +39,6 @@ class App extends React.Component {
     if (this.state.show === true) {
       return (
         <div>
-          {/* {process.env.REACT_APP_API_KEY} */}
           <h2>City Explorer</h2>
           <Form>
             <Form.Label>Where would you like to explore?</Form.Label>
